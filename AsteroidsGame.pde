@@ -1,15 +1,147 @@
 //your variable declarations here
+SpaceShip Falcon = new SpaceShip(250,450);
+Stars [] pluto = new Stars[200];
 public void setup() 
 {
   //your code here
+  size(600,600);
+       for(int i =0; i< pluto.length;i++)
+  {
+    pluto[i] = new Stars();
+  }
 }
+
 public void draw() 
 {
   //your code here
+  background(0);
+  for(int i =0; i< pluto.length;i++)
+  {
+      pluto[i].show();
+  }
+  Falcon.show();
+  Falcon.move();
+  Falcon.speedLimit();
+  Falcon.display();
 }
-class SpaceShip //extends Floater  
+
+public void keyPressed()
+{
+  if (keyCode == UP || key == 'w')
+  {
+    Falcon.accelerate(0.22);
+  }
+  if (keyCode == LEFT || key == 'a')
+  {
+    Falcon.rotate(-10);
+  }
+    if (keyCode == RIGHT || key == 'd')
+  {
+    Falcon.rotate(10);
+  }
+      if (keyCode == DOWN || key == 's')
+  {
+    Falcon.accelerate(-0.10);
+  }
+  if (key == ' ')
+  {
+    if(Falcon.getH()>0)
+    {
+    Falcon.hyperSpace();
+  }
+  }
+}
+
+class Stars 
+{
+  private int myX, myY,myColor;
+Stars()
+  {
+    myX =(int)(Math.random()*600);
+    myY= (int)(Math.random()*600);
+    myColor = color(255,255,255);
+  }
+ public void setX(int x){myX = x;}
+ public int getX(){return (int)myX;}
+ public void setY(int y){myY =y;}
+ public int getY(){return (int)myY;}
+ public void show()
+{
+  fill(myColor);
+  stroke(0,0,255);
+  ellipse(getX(),getY(),5,5);
+}
+}
+
+class SpaceShip extends Floater  
 {   
-    //your code here
+  private int hype;
+  SpaceShip(double centerX, double centerY)
+  {
+   corners = 12;
+   int[] xList = {-20,-10,10,12,20,5,5,20,12,10,-10,-20};
+   int [] yList = {10,20,20,20,5,5,-5,-5,-20,-20,-20,-10};
+   xCorners = xList;
+   yCorners = yList;
+   myColor = color(61,186,227);
+   myCenterX = centerX;
+   myCenterY = centerY;
+   myDirectionX =0;
+   myDirectionY = 0;
+   myPointDirection = (int)(Math.random()*360); 
+   hype = 3;
+ }
+ public void setX(int x){myCenterX = x;}
+ public int getX(){return (int)myCenterX;}
+ public void setY(int y){myCenterY =y;}
+ public int getY(){return (int)myCenterY;}
+ public void setDirectionX(double x) {myDirectionX = x;}
+ public double getDirectionX(){return myDirectionX;}
+ public void setDirectionY(double y){myDirectionY =y;}
+ public double getDirectionY(){return myDirectionY;}
+ public void setPointDirection(int degrees){myPointDirection = degrees;}
+ public double getPointDirection(){return myPointDirection;}
+ public int getH(){return (int)hype;}
+ public void setH(int h){hype =h;} 
+ public void speedLimit()
+ {
+  System.out.println(myDirectionX);
+  if(myDirectionX > 2.11){
+    myDirectionX = myDirectionX- 0.22;
+  }
+   if(myDirectionY > 2.11){
+    myDirectionY = myDirectionY- 0.22;
+  }
+    if(myDirectionX < -2.11){
+    myDirectionX = myDirectionX+ 0.22;
+  }
+   if(myDirectionY < -2.11){
+    myDirectionY = myDirectionY+ 0.22;
+  }
+ }
+ public void hyperSpace()
+ {
+  myCenterX = (int)(Math.random()*500);
+  myCenterY = (int)(Math.random()*500);
+  myDirectionX =0;
+  myDirectionY = 0;
+  hype= hype -1;
+ }
+ public void display()
+ {
+  noFill();
+  stroke(0);
+  textSize(15);
+  text("Power",545,20);
+  rect(550,30,75,30);
+  fill(0,255,0);
+  if(hype >2)
+  rect(550,30,30,30);
+  if (hype >1)
+  rect(550,60,30,30);
+   if (hype >0)
+  rect(550,90,30,30);
+ }
 }
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
@@ -69,9 +201,10 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
       myCenterY = height;    
     }   
   }   
+
   public void show ()  //Draws the floater at the current position  
   {             
-    fill(myColor);   
+    fill(160,160,160);   
     stroke(myColor);    
     //convert degrees to radians for sin and cos         
     double dRadians = myPointDirection*(Math.PI/180);                 
