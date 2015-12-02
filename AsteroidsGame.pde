@@ -1,6 +1,8 @@
 //your variable declarations here
 SpaceShip Falcon = new SpaceShip(250,450);
 Stars [] pluto = new Stars[200];
+Asteroids [] juno = new Asteroids[10];
+
 public void setup() 
 {
   //your code here
@@ -8,6 +10,10 @@ public void setup()
        for(int i =0; i< pluto.length;i++)
   {
     pluto[i] = new Stars();
+  }
+        for(int i =0; i< juno.length;i++)
+  {
+    juno[i] = new Asteroids((int)(Math.random()*250),(int)(Math.random()*250),(int)(Math.random()*2));
   }
 }
 
@@ -18,6 +24,11 @@ public void draw()
   for(int i =0; i< pluto.length;i++)
   {
       pluto[i].show();
+  }
+   for(int i =0; i< juno.length;i++)
+  {
+    juno[i].show();
+    juno[i].move();
   }
   Falcon.show();
   Falcon.move();
@@ -141,6 +152,49 @@ class SpaceShip extends Floater
   rect(550,60,30,30);
    if (hype >0)
   rect(550,90,30,30);
+ }
+}
+
+ class Asteroids extends Floater
+ {
+  private int myrotSpeed,myRandom,rotRandom;
+  Asteroids(double centerX, double centerY, int rotSpeed)
+  {
+    myRandom =(int)(Math.random()*3)+1;
+    myrotSpeed = rotSpeed;
+    rotRandom =(int)(Math.random()*2);
+    corners = 13;
+    int [] xList = {17*myRandom,14*myRandom,6*myRandom,0*myRandom,-7*myRandom,-11*myRandom,-17*myRandom,-16*myRandom,-13*myRandom,-9*myRandom,-2*myRandom,4*myRandom,11*myRandom};
+    int [] yList = {4*myRandom,-6*myRandom,-13*myRandom,-15*myRandom,-14*myRandom,-10*myRandom,-6*myRandom,-1*myRandom,6*myRandom,10*myRandom,10*myRandom,16*myRandom,12*myRandom};
+    xCorners = xList;
+   yCorners = yList;
+   myColor = color(105,105,105);
+   myCenterX = centerX;
+   myCenterY = centerY;
+   myDirectionX =(int)(Math.random()*4)-2;
+   myDirectionY = (int)(Math.random()*4)-2;
+   myPointDirection = (int)(Math.random()*360); 
+    }
+  public void setX(int x){myCenterX = x;}
+ public int getX(){return (int)myCenterX;}
+ public void setY(int y){myCenterY =y;}
+ public int getY(){return (int)myCenterY;}
+ public void setDirectionX(double x) {myDirectionX = x;}
+ public double getDirectionX(){return myDirectionX;}
+ public void setDirectionY(double y){myDirectionY =y;}
+ public double getDirectionY(){return myDirectionY;}
+ public void setPointDirection(int degrees){myPointDirection = degrees;}
+ public double getPointDirection(){return myPointDirection;}
+ public void move()
+ {
+    super.move();
+  for(int i =0; i< juno.length; i++)
+  {
+    if(rotRandom != 0)
+      juno[i].rotate(myrotSpeed);
+    else
+      juno[i].rotate(myrotSpeed*-1);
+  }
  }
 }
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
