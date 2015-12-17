@@ -1,19 +1,29 @@
-//your variable declarations here
 SpaceShip Falcon = new SpaceShip(250,450);
 Stars [] pluto = new Stars[200];
-Asteroids [] juno = new Asteroids[10];
+ArrayList <Asteroids> junos;
+ArrayList <Bullets> lasers;
+double distance, collision;
+boolean left,right,up,down,laser;
 
 public void setup() 
 {
   //your code here
   size(600,600);
+  junos =new ArrayList <Asteroids>();
        for(int i =0; i< pluto.length;i++)
   {
     pluto[i] = new Stars();
   }
-        for(int i =0; i< juno.length;i++)
+        for(int i =0; i< 10;i++)
   {
-    juno[i] = new Asteroids((int)(Math.random()*250),(int)(Math.random()*250),(int)(Math.random()*2));
+    junos.add(new Asteroids((int)(Math.random()*250),(int)(Math.random()*250),(int)(Math.random()*5-2)));
+  }
+  {
+    lasers= new ArrayList <Bullets>();
+    for(int i=0;i<1;i++)
+    {
+    lasers.add(new Bullets(Falcon));
+    }
   }
 }
 
@@ -21,14 +31,32 @@ public void draw()
 {
   //your code here
   background(0);
+  if(right==true){Falcon.rotate(5);}
+    if(left==true){Falcon.rotate(-5); }
+    if(up==true){Falcon.accelerate(0.22);}
+    if(down==true){Falcon.accelerate(-0.7);}
+    if(laser ==true){lasers.add(new Bullets(Falcon));}
   for(int i =0; i< pluto.length;i++)
   {
       pluto[i].show();
   }
-   for(int i =0; i< juno.length;i++)
+   for(int i =0; i< junos.size();i++)
   {
-    juno[i].show();
-    juno[i].move();
+    junos.get(i).show();
+    junos.get(i).move();
+  }
+  for(int i=0;i<junos.size();i++){
+    for(int k=1;k<lasers.size();k++){
+    
+    lasers.get(k).show();
+    lasers.get(k).move();
+    collision=dist(junos.get(i).getX(),junos.get(i).getY(),lasers.get(k).getX(),lasers.get(k).getY());
+    if(collision<30){
+      junos.remove(i);
+      lasers.remove(k);
+      junos.add(new Asteroids((int)(Math.random()*40+600),(int)(Math.random()*40+600),(int)(Math.random()*2)));
+    }
+   }
   }
   Falcon.show();
   Falcon.move();
@@ -40,27 +68,40 @@ public void keyPressed()
 {
   if (keyCode == UP || key == 'w')
   {
-    Falcon.accelerate(0.22);
+    up =true;
   }
   if (keyCode == LEFT || key == 'a')
   {
-    Falcon.rotate(-10);
+    left = true;
   }
     if (keyCode == RIGHT || key == 'd')
   {
-    Falcon.rotate(10);
+    right = true;
   }
       if (keyCode == DOWN || key == 's')
   {
-    Falcon.accelerate(-0.10);
+    down = true;
   }
-  if (key == ' ')
+  if (key == 'h')
   {
     if(Falcon.getH()>0)
     {
     Falcon.hyperSpace();
   }
   }
+  if(key==' ')
+  {
+    laser = true;
+  }
+}
+
+public void keyReleased()
+{
+    if(key == 'd'){right=false;}
+    if(key == 'a'){left=false; }
+    if(key == 'w'){up=false;}
+    if(key=='s'){down=false;}
+    if(key ==' '){laser=false;}
 }
 
 class Stars 
@@ -116,7 +157,7 @@ class SpaceShip extends Floater
  public void setH(int h){hype =h;} 
  public void speedLimit()
  {
-  System.out.println(myDirectionX);
+  //System.out.println(myDirectionX);
   if(myDirectionX > 2.11){
     myDirectionX = myDirectionX- 0.22;
   }
@@ -142,9 +183,10 @@ class SpaceShip extends Floater
  {
   noFill();
   stroke(0);
+  fill(255,255,0);
   textSize(15);
   text("Power",545,20);
-  rect(550,30,75,30);
+  rect(550,30,30,30);
   fill(0,255,0);
   if(hype >2)
   rect(550,30,30,30);
@@ -157,16 +199,15 @@ class SpaceShip extends Floater
 
  class Asteroids extends Floater
  {
-  private int myrotSpeed,myRandom,rotRandom;
+  private int myrotSpeed,myRandom;
   Asteroids(double centerX, double centerY, int rotSpeed)
   {
     myRandom =(int)(Math.random()*3)+1;
     myrotSpeed = rotSpeed;
-    rotRandom =(int)(Math.random()*2);
     corners = 13;
     int [] xList = {17*myRandom,14*myRandom,6*myRandom,0*myRandom,-7*myRandom,-11*myRandom,-17*myRandom,-16*myRandom,-13*myRandom,-9*myRandom,-2*myRandom,4*myRandom,11*myRandom};
     int [] yList = {4*myRandom,-6*myRandom,-13*myRandom,-15*myRandom,-14*myRandom,-10*myRandom,-6*myRandom,-1*myRandom,6*myRandom,10*myRandom,10*myRandom,16*myRandom,12*myRandom};
-    xCorners = xList;
+   xCorners = xList;
    yCorners = yList;
    myColor = color(105,105,105);
    myCenterX = centerX;
@@ -188,15 +229,59 @@ class SpaceShip extends Floater
  public void move()
  {
     super.move();
-  for(int i =0; i< juno.length; i++)
-  {
-    if(rotRandom != 0)
-      juno[i].rotate(myrotSpeed);
-    else
-      juno[i].rotate(myrotSpeed*-1);
-  }
+        if((int)myDirectionX == 0)
+    {
+      myDirectionX = 1;
+    }
+     if((int)myrotSpeed == 0)
+    {
+      myrotSpeed = 1;
+    }
+  //for(int i =0; i< junos.size(); i++)
+  //{
+  //  if(rotRandom != 0)
+  //    junos.get(i).rotate(myrotSpeed);
+  //  else
+  //    junos.get(i).rotate(myrotSpeed*-1);
+  //}
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;     
+    myPointDirection += myrotSpeed;
  }
 }
+
+class Bullets extends Floater
+{
+      public Bullets(SpaceShip theShip)
+    {
+      myCenterX=theShip.getX();
+      myCenterY=theShip.getY();
+      myPointDirection=theShip.getPointDirection();
+      dRadians =myPointDirection*(Math.PI/180);
+      myDirectionX=5 * Math.cos(dRadians) + theShip.getDirectionX();
+      myDirectionY=5 * Math.sin(dRadians) + theShip.getDirectionY();
+    }
+    private double dRadians;
+    public void setX(int x){ myCenterX=x;}
+    public int getX(){ return (int)myCenterX;}
+    public void setY(int y){myCenterY=y;}
+    public int getY(){return (int)myCenterY;}
+    public void setDirectionX(double x){ myDirectionX=x;}
+    public double getDirectionX(){return myDirectionX;}
+    public void setDirectionY(double y){myDirectionY=y;}
+    public double getDirectionY(){return myDirectionY;}
+    public void setPointDirection(int degrees){myPointDirection=degrees;}
+    public double getPointDirection(){return myPointDirection;}
+    public void show(){
+      fill(0,255,0);
+      ellipse((int)myCenterX,(int)myCenterY,5,5);
+    }
+    public void move(){
+      myCenterX+=myDirectionX;
+      myCenterY+=myDirectionY;
+    }
+}
+
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
   protected int corners;  //the number of corners, a triangular floater has 3   
@@ -274,4 +359,3 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     endShape(CLOSE);  
   }   
 } 
-
